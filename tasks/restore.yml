@@ -1,0 +1,44 @@
+---
+
+- name: Get database restore file hash
+  ansible.builtin.stat:
+    path: "{{ spiderfoot_db_restorefile }}"
+    checksum_algorithm: sha256
+  connection: local
+  register: restorefile
+  become: no
+
+- name: Check if restore file has already been restored
+  ansible.builtin.stat:
+    path: "{{ spiderfoot_home }}/.sql_restore-{{ restorefile.stat.checksum }}"
+  register: restored
+  when: restorefile.stat.exists
+
+- name: Restore
+  when: restorefile.stat.exists and not restored.stat.exists
+  block:
+    - name: Ensure dest backup dir exists
+      ansible.builtin.file:
+        dest: "{{ spiderfoot_home }}/.spiderfoot"
+        state: "directory"
+        mode: "0700"
+        owner: "{{ spiderfoot_user }}"
+    - name: Stop spiderfoot service before db restore
+      ansible.builtin.service:
+        name: spiderfoot
+        state: stopped
+    - name: Push db file to system
+      ansible.builtin.copy:
+        src: "{{ spiderfoot_db_restorefile }}"
+        dest: "{{ spiderfoot_home }}/.spiderfoot/spiderfoot.db"
+        mode: "0600"
+        owner: "{{ spiderfoot_user }}"
+    - name: Start spiderfoot service after db restore
+      ansible.builtin.service:
+        name: spiderfoot
+        state: started
+    - name: Add restoration marker
+      ansible.builtin.file:
+        dest: "{{ spiderfoot_home }}/.sql_restore-{{ restorefile.stat.checksum }}"
+        mode: "0600"
+        state: "touch"

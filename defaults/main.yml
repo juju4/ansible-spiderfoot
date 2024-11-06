@@ -1,0 +1,18 @@
+---
+
+spiderfoot_pip: spiderfoot
+spiderfoot_version: 0f815a203afebf05c98b605dba5cf0475a0ee5fd
+spiderfoot_user: _spiderfoot
+spiderfoot_home: /var/lib/_spiderfoot
+spiderfoot_root: /var/lib/_spiderfoot/spiderfoot
+spiderfoot_virtualenv: /var/lib/_spiderfoot/env
+
+spiderfoot_bind_ip: localhost
+spiderfoot_bind_port: 5001
+
+spiderfoot_cgroups_restriction_enable: true
+
+spiderfoot_db_restore: false
+spiderfoot_db_restorefile: /orchestrator/path/to/spiderfoot.db
+# ~/.spiderfoot/spiderfoot.db: tbl_config
+# API keys

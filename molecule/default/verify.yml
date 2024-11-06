@@ -1,0 +1,93 @@
+---
+
+- name: Verify spiderfoot setup
+  hosts: spiderfoot
+  vars:
+    spiderfoot_home: /var/lib/_spiderfoot
+    spiderfoot_bin: "{{ spiderfoot_home }}/spiderfoot/sf.py"
+    config: "{{ spiderfoot_home }}/.spiderfoot/spiderfoot.db"
+    ports:
+      # spiderfoot default web ui
+      - { h: 0.0.0.0, p: 5001 }
+    url: http://localhost:5001
+    is_container: false
+  pre_tasks:
+    - name: Debug | var ansible_virtualization_type
+      ansible.builtin.debug:
+        var: ansible_virtualization_type
+    - name: Set fact is_container
+      ansible.builtin.set_fact:
+        is_container: true
+      when: >
+        (ansible_virtualization_type is defined and
+          (ansible_virtualization_type == "docker"
+           or ansible_virtualization_type == "containerd"
+           or ansible_virtualization_type == "container"
+          )
+        )
+  tasks:
+
+    - name: Check spiderfoot command
+      ansible.builtin.stat:
+        path: "{{ spiderfoot_bin }}"
+      register: bin1
+    - name: Validate spiderfoot command is present
+      ansible.builtin.assert:
+        that: bin1.stat.exists and bin1.stat.size != 0 and bin1.stat.mode == '0755'
+
+    - name: Check spiderfoot db file
+      ansible.builtin.stat:
+        path: "{{ config }}"
+      register: cfg1
+    - name: Validate spiderfoot db file is present
+      ansible.builtin.assert:
+        that: cfg1.stat.exists and cfg1.stat.size != 0
+
+    - name: Ensure spiderfoot process is running
+      ansible.builtin.command: pgrep -u _spiderfoot python
+      register: ps1
+      changed_when: false
+      failed_when: false
+    - name: Validate ps output
+      ansible.builtin.assert:
+        that: ps1.stdout
+      when:
+        - not is_container|bool
+
+    - name: Ensure ports are listening
+      ansible.builtin.wait_for:
+        host: "{{ item.h }}"
+        port: "{{ item.p }}"
+        timeout: 10
+      with_items: "{{ ports }}"
+      when:
+        - not is_container|bool
+
+    - name: Fetch localhost endpoint
+      ansible.builtin.uri:
+        url: "{{ url }}"
+        validate_certs: no
+        return_content: yes
+      register: web
+      failed_when: false
+    - name: Validate localhost endpoint
+      ansible.builtin.assert:
+        that: >
+          "'<title>Spiderfoot' in web.content"
+      when:
+        - not is_container|bool
+
+    - name: Check no error/warning in log
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep -riE 'error|warning' {{ spiderfoot_home }}/.spiderfoot/logs/spiderfoot.error.log
+      args:
+        executable: /bin/bash
+      register: log2
+      changed_when: false
+      failed_when: false
+    - name: Validate log2
+      ansible.builtin.assert:
+        that: log2.rc != 0
+      when:
+        - not is_container|bool

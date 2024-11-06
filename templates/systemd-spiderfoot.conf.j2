@@ -1,0 +1,53 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=spiderfoot service
+Requires=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/sh -c "{{ spiderfoot_virtualenv }}/bin/python {{ spiderfoot_root }}/sf.py -l {{ spiderfoot_bind_ip }}:{{ spiderfoot_bind_port }}"
+WorkingDirectory={{ spiderfoot_root }}
+Restart=on-failure
+RestartSec=10
+StandardOutput=syslog
+SyslogIdentifier=spiderfoot
+User={{ spiderfoot_user }}
+Group={{ spiderfoot_user }}
+
+# Hardening
+NoNewPrivileges=yes
+PrivateTmp=true
+PrivateDevices=yes
+ProtectHome=yes
+ProtectSystem=full
+{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int > 7) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 18) %}
+InaccessiblePaths=/proc
+ProtectKernelTunables=true
+ProtectKernelModules=yes
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictNamespaces=~user mnt
+LockPersonality=true
+{% endif %}
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+{% if not (ansible_virtualization_type is defined and
+          ansible_virtualization_type == "docker"
+        )
+%}
+{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 16) %}
+
+{% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 18) %}
+SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @privileged
+{% endif %}
+# When system call is disallowed, return error code instead of killing process
+SystemCallErrorNumber=EPERM
+{% endif %}
+{% endif %}
+{% if spiderfoot_cgroups_restriction_enable|bool %}
+CPUShares={{ spiderfoot_cgroups_cpushares | default('1024') }}
+CPUQuota={{ spiderfoot_cgroups_cpuquota | default('80%') }}
+MemoryLimit={{ spiderfoot_cgroups_memorylimit | default('4G') }}
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

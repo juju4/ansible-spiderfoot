@@ -1,0 +1,45 @@
+---
+
+- name: Install spiderfoot dependencies
+  ansible.builtin.package:
+    name: "{{ pkg_deps }}"
+    state: present
+
+- name: Install spiderfoot
+  ansible.builtin.pip:
+    name: "{{ spiderfoot_pip }}"
+    version: "{{ spiderfoot_version | default(omit) }}"
+    state: present
+- name: Ensure dependencies packages are present
+  ansible.builtin.package:
+    name:
+      - git
+      - python3
+      - python3-pip
+      - python3-virtualenv
+    state: present
+
+- name: Ensure spiderfoot user exists
+  ansible.builtin.user:
+    name: "{{ spiderfoot_user }}"
+    home: "{{ spiderfoot_home }}"
+    system: true
+
+- name: Git clone spiderfoot
+  ansible.builtin.git:
+    repo: https://github.com/smicallef/spiderfoot.git
+    dest: "{{ spiderfoot_root }}"
+    version: "{{ spiderfoot_version }}"
+    update: no
+  become: yes
+  become_user: "{{ spiderfoot_user }}"
+
+- name: Install pip dependencies
+  ansible.builtin.pip:
+    requirements: "{{ spiderfoot_root }}/requirements.txt"
+    virtualenv: "{{ spiderfoot_virtualenv }}"
+    virtualenv_python: "{{ python3_bin }}"
+  register: pkg_result
+  until: pkg_result is success
+  become: yes
+  become_user: "{{ spiderfoot_user }}"

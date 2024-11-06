@@ -1,10 +1,5 @@
 ---
 
-- name: Install spiderfoot dependencies
-  ansible.builtin.package:
-    name: "{{ pkg_deps }}"
-    state: present
-
 - name: Install spiderfoot
   ansible.builtin.pip:
     name: "{{ spiderfoot_pip }}"

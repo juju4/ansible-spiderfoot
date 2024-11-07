@@ -6,6 +6,11 @@
     cache_valid_time: 3600
   when: ansible_os_family == 'Debian'
 
+- name: RedHat | Update cache
+  ansible.builtin.package:
+    update_cache: true
+  when: ansible_os_family == 'RedHat'
+
 - name: Ensure dependencies packages are present
   ansible.builtin.package:
     name: "{{ pkg_deps }}"

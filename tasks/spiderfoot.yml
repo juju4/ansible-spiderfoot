@@ -13,7 +13,11 @@
 
 - name: Ensure dependencies packages are present
   ansible.builtin.package:
-    name: "{{ pkg_deps }}"
+    name:
+      - git
+      - python3
+      - python3-pip
+      - python3-virtualenv
     state: present
 
 - name: Ensure spiderfoot user exists

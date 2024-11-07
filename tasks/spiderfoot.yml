@@ -1,10 +1,5 @@
 ---
 
-- name: Install spiderfoot
-  ansible.builtin.pip:
-    name: "{{ spiderfoot_pip }}"
-    version: "{{ spiderfoot_version | default(omit) }}"
-    state: present
 - name: Ensure dependencies packages are present
   ansible.builtin.package:
     name:

@@ -5,6 +5,7 @@
   vars:
     spiderfoot_home: /var/lib/_spiderfoot
     spiderfoot_bin: "{{ spiderfoot_home }}/spiderfoot/sf.py"
+    sf_py_mode: '0664'
     config: "{{ spiderfoot_home }}/.spiderfoot/spiderfoot.db"
     ports:
       # spiderfoot default web ui
@@ -25,6 +26,10 @@
            or ansible_virtualization_type == "container"
           )
         )
+    - name: Debian | Set fact
+      ansible.builtin.set_fact:
+        sf_py_mode: '0644'
+      when: ansible_distribution == 'Debian'
   tasks:
 
     - name: Check spiderfoot command

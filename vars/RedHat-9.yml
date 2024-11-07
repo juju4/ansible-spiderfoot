@@ -1,3 +1,9 @@
 ---
 
+pkg_deps:
+  - git
+  - python3
+  - python3-pip
+  - virtualenv
+
 python3_bin: python3

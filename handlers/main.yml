@@ -3,16 +3,12 @@
 - name: Reload systemd
   ansible.builtin.systemd:
     daemon_reload: yes
-  when: >
-    not (ansible_virtualization_type is defined and
-      (ansible_virtualization_type == "docker" or ansible_virtualization_type == "containerd")
-    )
+  when:
+    - not is_container | bool
 
 - name: Restart spiderfoot
   ansible.builtin.service:
     name: spiderfoot
     state: restarted
-  when: >
-    not (ansible_virtualization_type is defined and
-      (ansible_virtualization_type == "docker" or ansible_virtualization_type == "containerd")
-    )
+  when:
+    - not is_container | bool

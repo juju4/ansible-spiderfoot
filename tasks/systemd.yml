@@ -20,3 +20,5 @@
     name: spiderfoot
     state: started
     enabled: yes
+  when:
+    - not is_container | bool

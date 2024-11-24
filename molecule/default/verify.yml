@@ -9,7 +9,8 @@
     config: "{{ spiderfoot_home }}/.spiderfoot/spiderfoot.db"
     ports:
       # spiderfoot default web ui
-      - { h: 0.0.0.0, p: 5001 }
+      # - { h: 0.0.0.0, p: 5001 }
+      - { h: localhost, p: 5001 }
     url: http://localhost:5001
     is_container: false
   pre_tasks:

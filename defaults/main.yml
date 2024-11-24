@@ -16,3 +16,5 @@ spiderfoot_db_restore: false
 spiderfoot_db_restorefile: /orchestrator/path/to/spiderfoot.db
 # ~/.spiderfoot/spiderfoot.db: tbl_config
 # API keys
+
+is_container: false

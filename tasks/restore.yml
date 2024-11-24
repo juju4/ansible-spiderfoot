@@ -1,6 +1,6 @@
 ---
 
-- name: Get database restore file hash
+- name: Get database restore file hash on orchestrator
   ansible.builtin.stat:
     path: "{{ spiderfoot_db_restorefile }}"
     checksum_algorithm: sha256

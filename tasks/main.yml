@@ -13,6 +13,9 @@
 - name: Import spiderfoot
   ansible.builtin.import_tasks: spiderfoot.yml
 
+- name: Import systemd
+  ansible.builtin.import_tasks: systemd.yml
+
 - name: Import restore
   ansible.builtin.import_tasks: restore.yml
   when:

@@ -8,22 +8,15 @@
 
 - name: Ensure systemd unit files are configured
   ansible.builtin.template:
-    src: "systemd-{{ item }}.conf.j2"
-    dest: "/etc/systemd/system/{{ item }}.service"
+    src: "systemd-spiderfoot.conf.j2"
+    dest: "/etc/systemd/system/spiderfoot.service"
     mode: '0644'
-  loop:
-    - kvrocks
-    - hashlookupserver
   notify:
     - Reload systemd
-    - Restart kvrocks
-    - Restart hashlookup-server
+    - Restart spiderfoot
 
 - name: Ensure services are enabled and started
   ansible.builtin.service:
-    name: "{{ item }}"
+    name: spiderfoot
     state: started
     enabled: yes
-  loop:
-    - kvrocks
-    - hashlookupserver

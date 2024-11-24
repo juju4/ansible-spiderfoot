@@ -45,7 +45,7 @@ $ MOLECULE_DISTRO=ubuntu:24.04 molecule test --destroy=never
 
 ## Troubleshooting & Known issues
 
-N/A
+* spiderfoot only supports SOCKS4-5 proxy. Examples: [microsocks](https://github.com/rofl0r/microsocks), [squid with custom compile](https://wiki.squid-cache.org/Features/Socks), but not tinyproxy.
 
 ## License
 

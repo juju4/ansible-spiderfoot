@@ -9,7 +9,6 @@ ExecStart=/bin/sh -c "{{ spiderfoot_virtualenv }}/bin/python {{ spiderfoot_root 
 WorkingDirectory={{ spiderfoot_root }}
 Restart=on-failure
 RestartSec=10
-StandardOutput=syslog
 SyslogIdentifier=spiderfoot
 User={{ spiderfoot_user }}
 Group={{ spiderfoot_user }}
@@ -44,9 +43,9 @@ SystemCallErrorNumber=EPERM
 {% endif %}
 {% endif %}
 {% if spiderfoot_cgroups_restriction_enable|bool %}
-CPUShares={{ spiderfoot_cgroups_cpushares | default('1024') }}
+CPUWeight={{ spiderfoot_cgroups_cpushares | default('1024') }}
 CPUQuota={{ spiderfoot_cgroups_cpuquota | default('80%') }}
-MemoryLimit={{ spiderfoot_cgroups_memorylimit | default('4G') }}
+MemoryMax={{ spiderfoot_cgroups_memorylimit | default('4G') }}
 {% endif %}
 
 [Install]

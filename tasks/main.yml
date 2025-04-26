@@ -26,6 +26,8 @@
 
 - name: Import firewall-ufw
   ansible.builtin.import_tasks: firewall-ufw.yml
+  when:
+    - not is_container | bool
 
 - name: Import systemd
   ansible.builtin.import_tasks: systemd.yml

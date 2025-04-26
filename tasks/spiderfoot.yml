@@ -47,3 +47,18 @@
   until: pkg_result is success
   become: yes
   become_user: "{{ spiderfoot_user }}"
+
+- name: Ensure .spiderfoot dir exists
+  ansible.builtin.file:
+    dest: "{{ spiderfoot_home }}/.spiderfoot"
+    state: "directory"
+    mode: "0700"
+    owner: "{{ spiderfoot_user }}"
+
+- name: Set password file
+  ansible.builtin.copy:
+    content: |
+      {{ spiderfoot_web_user }}:{{ spiderfoot_web_pass }}
+    dest: "{{ spiderfoot_home }}/.spiderfoot/passwd"
+    mode: '0644'
+    owner: root

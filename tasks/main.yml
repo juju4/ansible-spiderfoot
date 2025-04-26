@@ -24,6 +24,9 @@
 - name: Import spiderfoot
   ansible.builtin.import_tasks: spiderfoot.yml
 
+- name: Import firewall-ufw
+  ansible.builtin.import_tasks: firewall-ufw.yml
+
 - name: Import systemd
   ansible.builtin.import_tasks: systemd.yml
 

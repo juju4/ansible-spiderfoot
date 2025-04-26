@@ -7,8 +7,11 @@ spiderfoot_home: /var/lib/_spiderfoot
 spiderfoot_root: /var/lib/_spiderfoot/spiderfoot
 spiderfoot_virtualenv: /var/lib/_spiderfoot/env
 
-spiderfoot_bind_ip: localhost
+spiderfoot_bind_ip: 127.0.0.1
 spiderfoot_bind_port: 5001
+
+spiderfoot_web_user: admin
+spiderfoot_web_pass: change_me!
 
 spiderfoot_cgroups_restriction_enable: true
 
@@ -16,5 +19,42 @@ spiderfoot_db_restore: false
 spiderfoot_db_restorefile: /orchestrator/path/to/spiderfoot.db
 # ~/.spiderfoot/spiderfoot.db: tbl_config
 # API keys
+
+spiderfoot_ufw: true
+spiderfoot_ufw_if: eth0
+## only affect incoming traffic
+# spiderfoot_ufw_default_policy: allow
+spiderfoot_ufw_default_policy: deny
+spiderfoot_ufw_default_logging: medium
+# trusted sources for all ports
+spiderfoot_ufw_access:
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+spiderfoot_ufw_access_with_log: []
+# opened ports for all sources
+spiderfoot_ufw_allow_ports_in: []
+# direct?
+#  - '5001'
+# access via reverse proxy
+#  - '443'
+spiderfoot_ufw_out_logging: no
+spiderfoot_ufw_allow_ports_out:
+  # - '22'
+  # - '25'
+  - '53'
+  - '123'
+  ## email/TLS?
+  - '587'
+  ## web (some apt updates are on http)
+  - '80'
+  - '443'
+  # - '8080'
+
+# web proxy? spiderfoot can only use SOCKS proxy
+spiderfoot_proxy_ip:
+spiderfoot_proxy_port:
+
+spiderfoot_ufw_allow_if_out: []
 
 is_container: false

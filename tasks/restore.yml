@@ -17,12 +17,6 @@
 - name: Restore
   when: restorefile.stat.exists and not restored.stat.exists
   block:
-    - name: Ensure dest backup dir exists
-      ansible.builtin.file:
-        dest: "{{ spiderfoot_home }}/.spiderfoot"
-        state: "directory"
-        mode: "0700"
-        owner: "{{ spiderfoot_user }}"
     - name: Stop spiderfoot service before db restore
       ansible.builtin.service:
         name: spiderfoot

@@ -119,3 +119,11 @@ jobs:
           sqlite /var/lib/_spiderfoot/.spiderfoot/spiderfootdb "select * from tbl_config limit 20;"
         if: ${{ always() }}
         continue-on-error: true
+      - name: After script - curl
+        run: |
+          set -x
+          curl -v http://127.0.0.1:5001 || true
+          curl -v --digest -u "admin:change_me!" http://127.0.0.1:5001 || true
+          curl -vk --digest -u "admin:change_me!" https://127.0.0.1 || true
+        if: ${{ always() }}
+        continue-on-error: true
